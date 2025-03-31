@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
-const routesBooks = require("./src/routes/tasks");
+const routesBooks = require("./src/routes/task");
+require("dotenv").config() ;
 const cors = require("cors");
 const corsOptions = {
 origin: "*",
@@ -15,5 +16,6 @@ app.get("/", (req,res)=> {
 });
 const PORT = 3000;
 app.listen(PORT, () => {
-console.log("server run on http://localhost:${PORT}");
+    console.log(process.env);
+    console.log("server run on http://localhost:${PORT}");
 });
