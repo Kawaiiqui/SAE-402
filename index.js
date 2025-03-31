@@ -8,7 +8,7 @@ optionsSuccessStatus: 200
 };
 
 app.use(express.json()).use(cors(corsOptions));
-app.use( "/tasks", taskRoutes);
+app.use( "/task", taskRoutes);
 app.use(express.json());
 app.get("/", (req,res)=> {
     res.send("Welcome on the movie archive API");
