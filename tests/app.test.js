@@ -1,9 +1,17 @@
+const jestOpenAPI = require("jest-openapi").default;
 const request = require("supertest");
-const baseURL = "http://localhost:3000";
-describe ("task API End points", () => {
-    test("GET/task should return all tasks", async() => {
-        const response = await request(baseURL).get("/task");
-        expect(response.statusCode).toBe(200);
-        expect(Array.isArray(response.body.data)).toBeTruthy();
-    });
+const path = require("path");
+const server = "http://localhost:3000";
+// Sets the location of your OpenAPI Specification file
+jestOpenAPI(path.join(__dirname, "../src/swagger/api_swagger_doc.yml"));
+describe("Test API", () => {
+test("GET /task should make a GET request and satisfy OpenAPI spec",
+async () => {
+// Make request (supertest used here)
+const res = await request(server).get("/task");
+// Make any assertions as normal
+expect(res.status).toEqual(200);
+// Assert that the HTTP response satisfies the OpenAPI spec
+expect(res).toSatisfyApiSpec();
+});
 });

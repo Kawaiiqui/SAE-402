@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const{User, Task, AssignedTo} = require("../sgbd/models");
+const{movies, Task, AssignedTo} = require("../sgbd/models");
 const authenticateUser = require("../auth/auth.js");
 const Joi = require("joi");
 const taskScheme = Joi.object({
