@@ -1,26 +1,77 @@
 const Sequelize = require("sequelize");
-const myDB = require("./src/config");
-const User = myDB.define("user", {
-name: {
-type: Sequelize.STRING ,
-allowNull: false,
-},
-email: {
-type: Sequelize.STRING ,
-allowNull: false,
-unique: true,
-validate: {
-    isEmail: true,
-},
-},
-});
-const Task = myDB.define("task", {
-action: {
-    type: Sequelize.STRING ,
-    allowNull: false,
-},
-solved: {
-type : Sequelize.BOOLEAN,
-allowNull: false,
-}
-});
+const myDB = require("./config");
+
+
+const Movie = myDB.define(
+    "movie", 
+    {
+        id: {
+              type: Sequelize.INTEGER,
+              autoIncrement: true,
+              primaryKey: true,
+        },
+        title: {
+            type: Sequelize.STRING,
+            allowNull: false,
+        },
+        year: {
+              type: Sequelize.DATE,
+              allowNull: false,
+            },
+    });
+const Actor = myDB.define(
+    "actors", 
+    {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+        },
+        name: {
+                type: Sequelize.STRING,
+                allowNull: false,
+        }
+    });
+
+const Genre = myDB.define(
+    "genre", 
+    {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+        },
+        genre: {
+                type: Sequelize.STRING,
+                allowNull: false,
+        }
+    });
+
+const Moviesactors = myDB.define(
+    "moviesactors", 
+    {
+        id_movie: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            allowNull: false,
+        },
+        id_actors: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+        }
+    });
+
+const Moviesgenre = myDB.define(
+    "moviesgenre", 
+    {
+        id_movie: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            allowNull: false,
+        },
+        id_genre: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+        }
+    });
+module.exports = {Movie, Actor, Genre, Moviesactors, Moviesgenre};

@@ -6,13 +6,25 @@ info:
 servers:
   - url: http://localhost:3000
 tags:
-  - name: book
-    description: Everything about your books
+  - name: movie
+    description: Everything about your movies 
+  - name : actors
+    description: Everything about your actors
+  - name: genre
+    description: Everything about your movie genres
+  - name: movieactors
+    description: All the actors in your movies
+  - name: moviegenre
+    description: All the movies in chosen genre
 paths:
-  /books:
+  /:
     get:
       tags:
-        - book
+        - movie
+        - actors
+        - genre
+        - movieactors
+        - moviegenre
       summary: Finds all books
       responses:
         '200':
