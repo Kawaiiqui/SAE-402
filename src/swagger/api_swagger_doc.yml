@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: Swagger Bookstore - OpenAPI 3.0
-  description: Basic bookstore API
+  title: Swagger Movie archive - OpenAPI 3.0
+  description: Basic movie archive API
   version: 1.0.0
 servers:
   - url: http://localhost:3000
@@ -17,15 +17,13 @@ tags:
   - name: moviegenre
     description: All the movies in chosen genre
 paths:
-  /:
+  /movies:
     get:
       tags:
-        - movie
-        - actors
-        - genre
-        - movieactors
-        - moviegenre
-      summary: Finds all books
+        - id
+        - title
+        - year
+      summary: Finds all movies
       responses:
         '200':
           description: successful operation
@@ -39,7 +37,7 @@ paths:
                   data : 
                     type: array
                     items: 
-                      $ref: "#/components/schemas/Book"
+                      $ref: "#/components/schemas/movie"
                   
                 required:
                   - message
@@ -47,15 +45,94 @@ paths:
                 additionalProperties: false  
         '400':
           description: Invalid status value
+  /actors:
+    get:
+      tags:
+        - id
+        - name
+      summary: Finds all actors
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data: 
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/actors"
+  /genre:
+    get:
+      tags:
+        - id
+        - genre
+      summary: Finds all genres
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data: 
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/genre"
+  /moviesactor:
+    get:
+      tags:
+        - id_movie
+        - id_actors
+      summary: Finds all actors of specified movie
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data: 
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/moviesactor"
+  /moviesgenre:
+    get:
+      tags:
+        - id_movie
+        - id_genre
+      summary: Finds genre of specified movie
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data: 
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/moviesgenre"
 components:
   schemas:
-    Book:
+    movie:
       type: object
       required:
         - id
         - title
-        - author
-        - publish_year
+        - year
       properties:
         id:
           type: integer
@@ -63,14 +140,66 @@ components:
           example: 10
         title:
           type: string
-          description: Title of the book
-          example: "My first book"
-        author:
-          type: string
-          description: Author of the book
-          example: "John Doe"
-        publish_year:
+          description: Title of the movie
+          example: "My first movie"
+        year:
           type: integer
           format: int64
           example: 1990
       additionalProperties: false
+    actors:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          description: Name of the actor
+          example: "Emma Watson"
+    genre:
+      type: object
+      required:
+        - id
+        - genre
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        genre:
+          type: string
+          description: Genre of the movie
+          example: "Action"
+    moviesactor:
+      type: object
+      required:
+        - id_movie
+        - id_actors
+      properties:
+        id_movie:
+          type: integer
+          format: int64
+          example: 10
+        id_actors:
+          type: integer
+          format: int64
+          example: 10
+    moviesgenre:
+      type: object
+      required:
+        - id_movie
+        - id_actors
+      properties:
+        id_movie:
+          type: integer
+          format: int64
+          example: 10
+        id_genre:
+          type: integer
+          format: int64
+          example: 10

@@ -1,18 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const{Movies} = require("../sgbd/models.js");
+const{Genre} = require("../sgbd/models.js");
 
 // Get a l l t a s k s
 router.get( "/", async(req, res) => {
     try{
-    const data = await Movies.findAll();
+    const data = await Genre.findAll();
     res.json({
-        message: "All movies", 
+        message: "All genres", 
         data
     });
     } catch(error){
         res.status(500).json({
-            message: "Failed to fetch movies."
+            message: "Failed to fetch genres."
         });
     }
 });

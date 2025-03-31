@@ -15,7 +15,7 @@ const Movie = myDB.define(
             allowNull: false,
         },
         year: {
-              type: Sequelize.DATE,
+              type: Sequelize.INTEGER,
               allowNull: false,
             },
     });
