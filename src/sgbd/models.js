@@ -18,7 +18,8 @@ const Movie = myDB.define(
               type: Sequelize.INTEGER,
               allowNull: false,
             },
-    });
+    }
+);
 const Actor = myDB.define(
     "actors", 
     {
@@ -31,7 +32,8 @@ const Actor = myDB.define(
                 type: Sequelize.STRING,
                 allowNull: false,
         }
-    });
+    }
+);
 
 const Genre = myDB.define(
     "genre", 
@@ -45,33 +47,34 @@ const Genre = myDB.define(
                 type: Sequelize.STRING,
                 allowNull: false,
         }
-    });
+    }
+);
 
 const Moviesactors = myDB.define(
     "moviesactors", 
     {
         id_movie: {
             type: Sequelize.INTEGER,
-            autoIncrement: true,
             allowNull: false,
         },
         id_actors: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
         }
-    });
+    }
+);
 
 const Moviesgenre = myDB.define(
     "moviesgenre", 
     {
         id_movie: {
             type: Sequelize.INTEGER,
-            autoIncrement: true,
             allowNull: false,
         },
         id_genre: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
         }
-    });
+    }
+);
 module.exports = {Movie, Actor, Genre, Moviesactors, Moviesgenre};
