@@ -1,9 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const{User, Task, AssignedTo} = require("../sgbd/models");
+const authenticateUser = require("../auth/auth.js");
+const Joi = require("joi");
+const taskScheme = Joi.object({
+    action: Joi.string().min(3).required(),
+    solved: Joi.boolean(),
+    });
+
 
 // Get a l l t a s k s
-router.get( "/", async(req, res) => {
+router.get( "/", authenticateUser, async(req, res) => {
     try{
     const tasks = await Task.findAll();
     res.json({message: "All tasks", data: tasks});
@@ -12,7 +19,7 @@ router.get( "/", async(req, res) => {
     }
 });
 
-router.post("/", async(req, res) => {
+router.post("/", authenticateUser, async(req, res) => {
     if(req.body){
         try{
             const task = await Task.create(req.body);
@@ -31,7 +38,7 @@ router.post("/", async(req, res) => {
     }
 });
 
-router.post("/", async(req, res) => {
+router.post("/", authenticateUser, async(req, res) => {
     if(req.body) {
     res.json({message: "body is defined." , data: req.body});
     }else{
@@ -41,7 +48,22 @@ router.post("/", async(req, res) => {
     }
 });
 
-router.delete("/:id", async(req, res) => {
+router.post("/", authenticateUser, async(req, res) => {
+    if(req.body){
+        const {error} = taskScheme.validate(req.body);
+        if(error)
+            return res.status(400).json({
+            status: 400,
+            message: error.details[0].message,
+            });
+    }else{
+        res
+            .status(500)
+            .json({message: "You forgot the body part in your request !"});
+    }
+});
+
+router.delete("/:id", authenticateUser, async(req, res) => {
     if(req.params.id){
         try{
             const deletedRowsCount = await Task.destroy({
