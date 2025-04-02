@@ -186,13 +186,12 @@
                 <div class="game-content">
                     <div class="game-square" id="game-square"></div>
                 </div>
-                <button class="btn" id="game">Lancer la partie</button>
+                <button class="btn" id="button">Lancer la partie</button>
             </div>
             
             <div class="stats-container">
                 <div class="stats-header">Statistiques de Progression</div>
                 <div class="stats-content">
-                    <p>Pourcentage d'avancement avant la fin du jeu :</p>
                     <div class="chart-container" id="pie-chart"></div>
                 </div>
             </div>
@@ -308,17 +307,27 @@
             
                 updateChart(0.80) // ça c'est juste pour simuler et voir si ça marche bien :3
     
-                // Ajout du SVG dans la div #pie-chart
-                document.getElementById("pie-chart").appendChild(svg.node());
                 // Exemple de données
                 const data = [
                     [10, 20, "A"],
                     [30, 40, "B"],
                     [50, 60, "C"]
                 ];
-                
-                const game = createChart(data, 600, 400);
-                document.getElementById('game-square').appendChild(game);
+                let chart = null;
+                const game = document.getElementById('game-square');
+                const showButton = document.getElementById('button');
+                showButton.addEventListener('click', () => {
+                    console.log("Bouton cliqué");
+                    // Si le graphique n'a pas encore été créé
+                    if (!chart) {
+                    chart = createChart(data, 600, 400);
+                    game.appendChild(chart);
+                    document.getElementById("pie-chart").appendChild(svg.node());
+                    }
+                    
+                    // Afficher le conteneur (qui était caché avec style="display: none;")
+                    game.style.display = 'block';
+                });
             });
 
         </script>
