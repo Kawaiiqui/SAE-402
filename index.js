@@ -5,6 +5,7 @@ const actorRoute = require("./src/routes/actors.js");
 const genreRoute = require("./src/routes/genre.js");
 const moviesactorRoute = require("./src/routes/moviesactors.js");
 const moviesgenreRoute = require("./src/routes/moviesgenre.js");
+const path = require('path');
 require("dotenv").config() ;
 const cors = require("cors");
 const corsOptions = {
@@ -20,7 +21,8 @@ app.use( "/moviesactors", moviesactorRoute);
 app.use( "/moviesgenre", moviesgenreRoute);
 app.use(express.json());
 app.get("/", (req,res)=> {
-    res.send("Welcome on the movie archive API");
+    const fullPath = path.join(__dirname, 'public', 'index.html');
+    res.sendFile(fullPath);
 });
 const PORT = 3000;
 app.listen(PORT, () => {
