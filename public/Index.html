@@ -210,7 +210,18 @@
 
                 // Définir le transform initial
                 const initialTransform = d3.zoomIdentity;
-                                    
+                
+                const domainValues = [];
+                for (const key in data) {
+                if (data.hasOwnProperty(key) && data[key][2] !== undefined) {
+                    domainValues.push(data[key][2]);
+                }
+                }
+
+                const color = d3.scaleOrdinal()
+                .domain(domainValues)
+                .range(d3.schemeCategory10);
+                    
                 const zoom = d3.zoom()
                     .on("zoom", zoomed);
                     
@@ -221,12 +232,18 @@
                     .attr("fill", "none")
                     .attr("stroke-linecap", "round");
                     
-                g.selectAll("path")
-                    .data(data)
-                    .join("path")
-                    .attr("d", d => `M${x(d[0])},${y(d[1])}h0`)
-                    .attr("stroke", d => color(d[2]));
-                    
+                    g.selectAll("path")
+                        .data(data)
+                        .join("path")
+                        .attr("d", d => {
+                            if (d.x !== undefined && d.y !== undefined) {
+                                return `M${x(d.x)},${y(d.y)}h0`; // Dessiner un point
+                            } else {
+                                console.warn("Données invalides pour le chemin :", d);
+                                return null;
+                            }
+                        })
+                        .attr("stroke", d => color(d.category || "default"));
                 const gx = svg.append("g")
                     .attr("transform", `translate(0,${height})`);
                     
@@ -294,47 +311,65 @@
                         };
                     };
                 }
-            
-                function updateChart() {
-                    foreground.transition()
-                        .duration(750)
-                        .attrTween("d", arcTween(Math.random() * tau));
-                }
-            
-                updateChart(0.80) // ça c'est juste pour simuler et voir si ça marche bien :3
+                
+                 // ça c'est juste pour simuler et voir si ça marche bien :3
     
-                
-                let chart = null;//on définit pas la chart tant qu'on a pas cliqué le bouton sinon ça s'affiche direct
-                
-                
                 const game = document.getElementById('game-square');
                 const showButton = document.getElementById('button');
+                const pieChartContainer = document.getElementById("pie-chart");
+                let totalItems = 0;
+                let discoveredItems = 0;
+                let chart = null;
+                    function updateChart() {
+                    const progress = discoveredItems / totalItems; // Calculer la progression
+                    const newAngle = progress * tau;
+                    foreground.transition()
+                        .duration(750)
+                        .attrTween("d", function (d) {
+                        const interpolate = d3.interpolate(d.endAngle, newAngle);
+                        return function (t) {
+                            d.endAngle = interpolate(t);
+                            return arc(d);
+                        };
+                    });
+                }
                 showButton.addEventListener('click', async() => {
                     console.log("Bouton cliqué");
                     //on récupère la BDD
                    try{
-                    const response = await fetch('/movies');
-                    //on récupère les données
-                    const data = await response.json();
-                    
-                    // Si le graphique n'a pas encore été créé
-                    if (!chart) {
-                    chart = createChart(data, 600, 400);
-                    game.appendChild(chart);
-                    document.getElementById("pie-chart").appendChild(svg.node());
-                    }
-                    
-                    // Afficher le conteneur (qui était caché avec style="display: none;")
-                    game.style.display = 'block';
-                    if (!response.ok) {
-                        throw new Error('Erreur lors de la récupération des données');
-                    }
+                        let response = await fetch('/movies');
+                        //on récupère les données
+                        response = await response.json();
+                        const data = response.data; // Assurez-vous que la réponse contient un tableau d'objets
+                        console.log(data)
+                        totalItems = data.length; // Mettre à jour le nombre total d'items
+                        const randomIndex = Math.floor(Math.random() * totalItems);
+                        console.log(randomIndex)
+
+                        const randomItem = data[randomIndex];
+                        const maxWidth = 100; // Correspond à la plage de l'échelle x
+                        const maxHeight = 100; // Correspond à la plage de l'échelle y
+                        randomItem.x = Math.random() * maxWidth; // Coordonnée X aléatoire
+                        randomItem.y = Math.random() * maxHeight;
+                        console.log(`Coordonnées aléatoires : (${randomItem.x}, ${randomItem.y})`);
+                        game.textContent = randomItem.name || randomItem.title || "Donnée inconnue";
+                        discoveredItems = Math.min(discoveredItems + 1, totalItems);
+                        updateChart(); 
+                        if (!chart) {
+                            chart = createChart(data, 600, 400);
+                            game.appendChild(chart);
+                            pieChartContainer.appendChild(svg.node());
+                        }
+                        // Afficher le conteneur (qui était caché avec style="display: none;")
+                        game.style.display = 'block';
+                        if (!response.ok) {
+                            throw new Error('Erreur lors de la récupération des données');
+                        }
                     } catch (error) {
                         console.error('Erreur:', error);
                     }
                 });
             });
-
         </script>
     </body>
 </html>
