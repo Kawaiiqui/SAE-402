@@ -1,5 +1,7 @@
+require("dotenv").config() ;
 const express = require("express");
 const app = express();
+const {QueryTypes} = require("sequelize");
 const movieRoute = require("./src/routes/movies.js");
 const actorRoute = require("./src/routes/actors.js");
 const genreRoute = require("./src/routes/genre.js");
@@ -7,7 +9,6 @@ const moviesactorRoute = require("./src/routes/moviesactors.js");
 const moviesgenreRoute = require("./src/routes/moviesgenre.js");
 const myDB = require('./src/sgbd/config');
 const path = require('path');
-require("dotenv").config() ;
 const cors = require("cors");
 const corsOptions = {
 origin: "*",
@@ -21,8 +22,8 @@ app.use( "/genre", genreRoute);
 app.use( "/moviesactors", moviesactorRoute);
 app.use( "/moviesgenre", moviesgenreRoute);
 app.use(express.json());
-
-app.get('./src/sgbd/config', async (req, res) => {
+/*
+app.get('/movies', async (req, res) => {
   try {
     // RQT SQL
     const data = await myDB.query(`
@@ -48,14 +49,20 @@ app.get('./src/sgbd/config', async (req, res) => {
     res.status(500).json({ message: 'Erreur serveur' });
   }
 });
-
+*/
 app.get("/", (req,res)=> {
     const fullPath = path.join(__dirname, 'public', 'index.html');
     res.sendFile(fullPath);
 });
 
 const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(process.env);
-    console.log("server run on http://localhost:3000");
+
+myDB.sync({force: false})
+.then(() => {
+    console.log("Database synchronized successfully.");
+    app.listen(PORT, () => {
+        console.log("server run on http://localhost:3000");
+    });
+}).catch((error) => {
+    console.error("Error synchronizing the database:", error);
 });

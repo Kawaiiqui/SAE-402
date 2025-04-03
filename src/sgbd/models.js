@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 const myDB = require("./config");
 
 
-const Movie = myDB.define(
+const Movies = myDB.define(
     "movie", 
     {
         id: {
@@ -18,9 +18,10 @@ const Movie = myDB.define(
               type: Sequelize.INTEGER,
               allowNull: false,
             },
-    }
+    },
+    {timestamps: false}
 );
-const Actor = myDB.define(
+const Actors = myDB.define(
     "actors", 
     {
         id: {
@@ -32,7 +33,8 @@ const Actor = myDB.define(
                 type: Sequelize.STRING,
                 allowNull: false,
         }
-    }
+    },
+    {timestamps: false}
 );
 
 const Genre = myDB.define(
@@ -47,7 +49,8 @@ const Genre = myDB.define(
                 type: Sequelize.STRING,
                 allowNull: false,
         }
-    }
+    },
+    {timestamps: false}
 );
 
 const Moviesactors = myDB.define(
@@ -61,7 +64,8 @@ const Moviesactors = myDB.define(
                 type: Sequelize.INTEGER,
                 allowNull: false,
         }
-    }
+    },
+    {timestamps: false}
 );
 
 const Moviesgenre = myDB.define(
@@ -75,6 +79,7 @@ const Moviesgenre = myDB.define(
                 type: Sequelize.INTEGER,
                 allowNull: false,
         }
-    }
+    },
+    {timestamps: false}
 );
-module.exports = {Movie, Actor, Genre, Moviesactors, Moviesgenre};
+module.exports = {Movies, Actors, Genre, Moviesactors, Moviesgenre};
