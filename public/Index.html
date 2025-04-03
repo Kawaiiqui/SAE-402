@@ -363,7 +363,7 @@
                         // Afficher le conteneur (qui était caché avec style="display: none;")
                         game.style.display = 'block';
                         if (!response.ok) {
-                            throw new Error('Erreur lors de la récupération des données');
+                            throw new Error('Erreur lors de la récupération des données', error);
                         }
                     } catch (error) {
                         console.error('Erreur:', error);
