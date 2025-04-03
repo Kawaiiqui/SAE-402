@@ -307,17 +307,27 @@
             
                 updateChart(0.80) // ça c'est juste pour simuler et voir si ça marche bien :3
     
-                // Exemple de données
-                const data = [
-                    [10, 20, "A"],
-                    [30, 40, "B"],
-                    [50, 60, "C"]
-                ];
-                let chart = null;
+                
+                let chart = null;//on définit pas la chart tant qu'on a pas cliqué le bouton sinon ça s'affiche direct
+                
+                
                 const game = document.getElementById('game-square');
                 const showButton = document.getElementById('button');
-                showButton.addEventListener('click', () => {
+                showButton.addEventListener('click', async() => {
                     console.log("Bouton cliqué");
+                    //on récupère la BDD
+                  /*  const response = await fetch('http://localhost:3000/src/sgbd');
+      
+                    if (!response.ok) {
+                        throw new Error('Erreur lors de la récupération des données');
+                    }*/
+                    
+                    const data = [
+                        [10, 20, "A"],
+                        [30, 40, "B"],
+                        [50, 60, "C"]
+                    ];
+
                     // Si le graphique n'a pas encore été créé
                     if (!chart) {
                     chart = createChart(data, 600, 400);
