@@ -344,7 +344,7 @@
                         console.log(data)
                         totalItems = data.length; // Mettre à jour le nombre total d'items
                         const randomIndex = Math.floor(Math.random() * totalItems);
-                        console.log(randomIndex)
+                        console.log(randomIndex) 
                         const randomItem = data[randomIndex];
                         const maxWidth = 100; // Correspond à la plage de l'échelle x
                         const maxHeight = 100; 
@@ -363,6 +363,8 @@
                         }
                         // Afficher le conteneur (qui était caché avec style="display: none;")
                         game.style.display = 'block';
+                        // Masquer le bouton après le clic
+                        showButton.style.display = 'none';
                         if (!response.ok) {
                             throw new Error('Erreur lors de la récupération des données');
                         }
