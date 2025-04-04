@@ -345,13 +345,14 @@
                         totalItems = data.length; // Mettre à jour le nombre total d'items
                         const randomIndex = Math.floor(Math.random() * totalItems);
                         console.log(randomIndex)
-
                         const randomItem = data[randomIndex];
                         const maxWidth = 100; // Correspond à la plage de l'échelle x
-                        const maxHeight = 100; // Correspond à la plage de l'échelle y
-                        randomItem.x = Math.random() * maxWidth; // Coordonnée X aléatoire
-                        randomItem.y = Math.random() * maxHeight;
-                        console.log(`Coordonnées aléatoires : (${randomItem.x}, ${randomItem.y})`);
+                        const maxHeight = 100; 
+                        for(var i=0; i<totalItems; i++){
+                            randomItem.x = Math.random() * maxWidth; // Coordonnée X aléatoire
+                            randomItem.y = Math.random() * maxHeight;
+                        };
+                        console.log(`${randomItem.id} aléatoires : (${randomItem.x}, ${randomItem.y})`);
                         game.textContent = randomItem.name || randomItem.title || "Donnée inconnue";
                         discoveredItems = Math.min(discoveredItems + 1, totalItems);
                         updateChart(); 
@@ -363,7 +364,7 @@
                         // Afficher le conteneur (qui était caché avec style="display: none;")
                         game.style.display = 'block';
                         if (!response.ok) {
-                            throw new Error('Erreur lors de la récupération des données', error);
+                            throw new Error('Erreur lors de la récupération des données');
                         }
                     } catch (error) {
                         console.error('Erreur:', error);
