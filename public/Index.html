@@ -74,6 +74,7 @@
             font-size: 1.2rem;
             font-weight: bold;
             border-radius: 8px 8px 0 0;
+            position: relative; /* Pour le positionnement du bouton refresh */
         }
         
         .game-content {
@@ -149,6 +150,22 @@
         
         .btn:hover {
             background-color: #2980b9;
+        }
+        
+        /* Style pour le bouton de rafraîchissement */
+        .refresh-btn {
+            background-color: #e74c3c !important;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-top: 0;
+        }
+        
+        .refresh-btn:hover {
+            background-color: #c0392b !important;
         }
         
         footer {
@@ -326,15 +343,27 @@
                     };
                 }
                 
-                 // ça c'est juste pour simuler et voir si ça marche bien :3
-    
+                // Get necessary elements
                 const game = document.getElementById('game-square');
                 const showButton = document.getElementById('button');
                 const pieChartContainer = document.getElementById("pie-chart");
+                const gameHeader = document.querySelector('.game-header');
                 let totalItems = 0;
                 let discoveredItems = 0;
                 let chart = null;
-                    function updateChart() {
+                
+                // Create refresh button element
+                const refreshButton = document.createElement('button');
+                refreshButton.textContent = 'Nouveau film';
+                refreshButton.id = 'refresh-button';
+                refreshButton.className = 'btn refresh-btn';
+                refreshButton.style.display = 'none'; // Initially hidden
+                
+                // Add the refresh button to the game header
+                gameHeader.appendChild(refreshButton);
+                
+                // Function to update chart progress
+                function updateChart() {
                     const progress = discoveredItems / totalItems; // Calculer la progression
                     const newAngle = progress * tau;
                     foreground.transition()
@@ -347,49 +376,113 @@
                         };
                     });
                 }
+                
+                // Function to load a new random movie
+                async function loadRandomMovie() {
+                    try {
+                        let response = await fetch('/movies');
+                        if (!response.ok) {
+                            throw new Error('Erreur lors de la récupération des données');
+                        }
+                        
+                        response = await response.json();
+                        const data = response.data;
+                        
+                        // Get random movie
+                        const randomIndex = Math.floor(Math.random() * data.length);
+                        const randomItem = data[randomIndex];
+                        
+                        // Set random coordinates
+                        const maxWidth = 100;
+                        const maxHeight = 100;
+                        randomItem.x = Math.random() * maxWidth;
+                        randomItem.y = Math.random() * maxHeight;
+                        
+                        // Update game display
+                        game.textContent = randomItem.name || randomItem.title || "Donnée inconnue";
+                        
+                        // Increment discovered items and update chart
+                        discoveredItems = Math.min(discoveredItems + 1, totalItems);
+                        updateChart();
+                        
+                        return data;
+                    } catch (error) {
+                        console.error('Erreur:', error);
+                        return null;
+                    }
+                }
+                
+                // Add event listener for the refresh button
+                refreshButton.addEventListener('click', async () => {
+                    console.log("Bouton rafraîchir cliqué");
+                    
+                    // Visual feedback during refresh
+                    game.style.opacity = '0.5';
+                    
+                    // Load new random movie data
+                    const data = await loadRandomMovie();
+                    
+                    if (data && chart) {
+                        // Remove old chart if it exists
+                        if (chart.parentNode === game) {
+                            game.removeChild(chart);
+                        }
+                        
+                        // Create new chart
+                        chart = createChart(data, 600, 400);
+                        game.appendChild(chart);
+                    }
+                    
+                    // Restore opacity
+                    game.style.opacity = '1';
+                });
+                
+                // Main button to start the game
                 showButton.addEventListener('click', async () => {
-    console.log("Bouton cliqué");
-    
-    try {
-        let response = await fetch('/movies');
-        response = await response.json();
-        const data = response.data;
-        
-        console.log(data);
-        totalItems = data.length;
-        const randomIndex = Math.floor(Math.random() * totalItems);
-        console.log(randomIndex);
+                    console.log("Bouton cliqué");
+                    
+                    try {
+                        let response = await fetch('/movies');
+                        response = await response.json();
+                        const data = response.data;
+                        
+                        console.log(data);
+                        totalItems = data.length;
+                        const randomIndex = Math.floor(Math.random() * totalItems);
+                        console.log(randomIndex);
 
-        const randomItem = data[randomIndex];
-        const maxWidth = 100;
-        const maxHeight = 100;
-        randomItem.x = Math.random() * maxWidth;
-        randomItem.y = Math.random() * maxHeight;
-        console.log(`Coordonnées aléatoires : (${randomItem.x}, ${randomItem.y})`);
+                        const randomItem = data[randomIndex];
+                        const maxWidth = 100;
+                        const maxHeight = 100;
+                        randomItem.x = Math.random() * maxWidth;
+                        randomItem.y = Math.random() * maxHeight;
+                        console.log(`Coordonnées aléatoires : (${randomItem.x}, ${randomItem.y})`);
 
-        game.textContent = randomItem.name || randomItem.title || "Donnée inconnue";
-        discoveredItems = Math.min(discoveredItems + 1, totalItems);
-        updateChart();
+                        game.textContent = randomItem.name || randomItem.title || "Donnée inconnue";
+                        discoveredItems = Math.min(discoveredItems + 1, totalItems);
+                        updateChart();
 
-        if (!chart) {
-            chart = createChart(data, 600, 400);
-            game.appendChild(chart);
-            pieChartContainer.appendChild(svg.node());
-        }
+                        if (!chart) {
+                            chart = createChart(data, 600, 400);
+                            game.appendChild(chart);
+                            pieChartContainer.appendChild(svg.node());
+                        }
 
-        game.style.display = 'block';
+                        game.style.display = 'block';
 
-        // Masquer le bouton après le clic
-        showButton.style.display = 'none';
+                        // Masquer le bouton "Lancer la partie"
+                        showButton.style.display = 'none';
+                        
+                        // Afficher le bouton "Nouveau film"
+                        refreshButton.style.display = 'block';
 
-        if (!response.ok) {
-            throw new Error('Erreur lors de la récupération des données');
-        }
-    } catch (error) {
-        console.error('Erreur:', error);
-    }
-});
-
+                        if (!response.ok) {
+                            throw new Error('Erreur lors de la récupération des données');
+                        }
+                    } catch (error) {
+                        console.error('Erreur:', error);
+                    }
+                });
             });
         </script>
     </body>
