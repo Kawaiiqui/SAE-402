@@ -87,7 +87,7 @@
         
         .game-square {
             width: 100%;
-            aspect-ratio: 1 / 1;
+            aspect-ratio: 3 / 1;
             background-color: #e0e0e0;
             display: flex;
             justify-content: center;
@@ -204,8 +204,8 @@
         <script>
             function createChart(data, width, height) {
                 // Il manque les constantes x, y et k qui ne sont pas définies
-                const x = d3.scaleLinear().domain([0, 100]).range([0, width]);
-                const y = d3.scaleLinear().domain([0, 100]).range([height, 0]);
+                const x = d3.scaleLinear().domain([0, 200]).range([0, width]);
+                const y = d3.scaleLinear().domain([0, 200]).range([height, 0]);
                 const k = height / width;
 
                 // Définir le transform initial
@@ -223,7 +223,9 @@
                 .range(d3.schemeCategory10);
                     
                 const zoom = d3.zoom()
-                    .on("zoom", zoomed);
+        .scaleExtent([0.5, 5])  // Zoom entre 50% et 500%
+        .translateExtent([[-width, -height], [2 * width, 2 * height]]) // Empêcher de sortir des limites
+        .on("zoom", zoomed);
                     
                 const svg = d3.create("svg")
                     .attr("viewBox", [0, 0, width, height]);
@@ -266,6 +268,18 @@
                     gx.call(xAxis, transform.rescaleX(x));
                     gy.call(yAxis, transform.rescaleY(y));  // Correction de yAhttps://... à yAxis
                 }
+
+                svg.node().addEventListener("wheel", event => {
+        event.preventDefault(); // Empêche le scroll de la page
+        const scaleFactor = 20; // Facteur de décalage
+        let dx = event.deltaX / scaleFactor;
+        let dy = event.deltaY / scaleFactor;
+
+        const currentTransform = d3.zoomTransform(svg.node());
+        const newTransform = currentTransform.translate(-dx, -dy);
+
+        svg.transition().duration(50).call(zoom.transform, newTransform);
+    });
                 
                 return Object.assign(svg.node(), {
                     update(transform) {
@@ -333,45 +347,49 @@
                         };
                     });
                 }
-                showButton.addEventListener('click', async() => {
-                    console.log("Bouton cliqué");
-                    //on récupère la BDD
-                   try{
-                        let response = await fetch('/movies');
-                        //on récupère les données
-                        response = await response.json();
-                        const data = response.data; // Assurez-vous que la réponse contient un tableau d'objets
-                        console.log(data)
-                        totalItems = data.length; // Mettre à jour le nombre total d'items
-                        const randomIndex = Math.floor(Math.random() * totalItems);
-                        console.log(randomIndex) 
-                        const randomItem = data[randomIndex];
-                        const maxWidth = 100; // Correspond à la plage de l'échelle x
-                        const maxHeight = 100; 
-                        for(var i=0; i<totalItems; i++){
-                            randomItem.x = Math.random() * maxWidth; // Coordonnée X aléatoire
-                            randomItem.y = Math.random() * maxHeight;
-                        };
-                        console.log(`${randomItem.id} aléatoires : (${randomItem.x}, ${randomItem.y})`);
-                        game.textContent = randomItem.name || randomItem.title || "Donnée inconnue";
-                        discoveredItems = Math.min(discoveredItems + 1, totalItems);
-                        updateChart(); 
-                        if (!chart) {
-                            chart = createChart(data, 600, 400);
-                            game.appendChild(chart);
-                            pieChartContainer.appendChild(svg.node());
-                        }
-                        // Afficher le conteneur (qui était caché avec style="display: none;")
-                        game.style.display = 'block';
-                        // Masquer le bouton après le clic
-                        showButton.style.display = 'none';
-                        if (!response.ok) {
-                            throw new Error('Erreur lors de la récupération des données');
-                        }
-                    } catch (error) {
-                        console.error('Erreur:', error);
-                    }
-                });
+                showButton.addEventListener('click', async () => {
+    console.log("Bouton cliqué");
+    
+    try {
+        let response = await fetch('/movies');
+        response = await response.json();
+        const data = response.data;
+        
+        console.log(data);
+        totalItems = data.length;
+        const randomIndex = Math.floor(Math.random() * totalItems);
+        console.log(randomIndex);
+
+        const randomItem = data[randomIndex];
+        const maxWidth = 100;
+        const maxHeight = 100;
+        randomItem.x = Math.random() * maxWidth;
+        randomItem.y = Math.random() * maxHeight;
+        console.log(`Coordonnées aléatoires : (${randomItem.x}, ${randomItem.y})`);
+
+        game.textContent = randomItem.name || randomItem.title || "Donnée inconnue";
+        discoveredItems = Math.min(discoveredItems + 1, totalItems);
+        updateChart();
+
+        if (!chart) {
+            chart = createChart(data, 600, 400);
+            game.appendChild(chart);
+            pieChartContainer.appendChild(svg.node());
+        }
+
+        game.style.display = 'block';
+
+        // Masquer le bouton après le clic
+        showButton.style.display = 'none';
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de la récupération des données');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+    }
+});
+
             });
         </script>
     </body>
